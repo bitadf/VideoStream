@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">VideoStream</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="first_user">کاربر اول</string>
+    <string name="liked">لایک شده ها</string>
+    <string name="video_time">مدت زمان ویديو: </string>
+    <string name="lormipsom">لورم ایپسوم متن ساختگی</string>
+    <string name="time_test">1:29</string>
+    <string name="liked_videos">ویدیو های لایک شده</string>
+    <string name="users">کاربر ها</string>
+</resources>

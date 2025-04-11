@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.fragments.UsersFragment"
+    android:layoutDirection="rtl">
+
+    <RelativeLayout
+        android:id="@+id/user_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/user_fragment_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <TextView
+            android:id="@+id/users_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/users"
+            android:layout_alignParentStart="true"
+            android:textSize="21sp"
+            tools:ignore="RelativeOverlap" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/user_close_icon"
+            android:layout_width="21sp"
+            android:layout_height="21sp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/baseline_close_24"
+            />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/user_title_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="21sp"
+        android:background="@color/black_safflower0"
+        >
+
+        <LinearLayout
+            android:id="@+id/user_first_user_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/user_first_user_icon"
+                android:layout_width="31sp"
+                android:layout_height="31sp"
+                android:src="@drawable/ultra_small_user_icon"
+                android:layout_gravity="center"
+                />
+            <TextView
+                android:id="@+id/user_first_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/first_user"
+                android:textSize="19sp"
+                android:layout_gravity="center"
+                android:layout_marginStart="9sp"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/user_second_user_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="21sp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/user_second_user_icon"
+                android:layout_width="31sp"
+                android:layout_height="31sp"
+                android:src="@drawable/ultra_small_user_icon"
+                android:layout_gravity="center"
+                />
+            <TextView
+                android:id="@+id/user_second_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/first_user"
+                android:textSize="19sp"
+                android:layout_gravity="center"
+                android:layout_marginStart="9sp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

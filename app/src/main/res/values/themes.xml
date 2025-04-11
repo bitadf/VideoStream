@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.VideoStream" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="fontFamily">@font/dana_font</item>
+        <item name="android:fontFamily">@font/dana_font</item>
+
+        <item name="colorPrimary">@color/magento</item>
+
+
+        <item name="colorPrimaryContainer">@color/black_safflower1</item>
+
+
+        <item name="colorSecondary">@color/ultra_pink</item>
+
+        <item name="colorSecondaryContainer">@color/sunset_serenade</item>
+
+        <item name="colorSurface">@color/black_safflower</item>
+
+        <item name="android:colorBackground">@color/black_safflower0</item>
+
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+
+        <item name="android:textColorSecondary">@color/ultra_pink</item>
+
+        <item name="android:statusBarColor">@color/black_safflower0</item>
+        <item name="android:navigationBarColor">@color/black_safflower0</item>
+    </style>
+
+    <style name="Theme.VideoStream" parent="Base.Theme.VideoStream" />
+</resources>

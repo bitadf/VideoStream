@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black_safflower">#19131B</color>
+    <color name="black_safflower0">#2C252F</color>
+    <color name="black_safflower1">#2F2533</color>
+    <color name="black_safflower2">#614773</color>
+    <color name="sunset_serenade">#5A4363</color>
+    <color name="pompelmo">#FF6767</color>
+    <color name="magento">#B444FF</color>
+    <color name="ultra_pink">#F582FF</color>
+
+
+</resources>
