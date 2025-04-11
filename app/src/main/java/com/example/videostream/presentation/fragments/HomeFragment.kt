@@ -5,13 +5,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.videostream.R
+import com.example.videostream.data.dataclasses.Video
 import com.example.videostream.databinding.FragmentHomeBinding
+import com.example.videostream.presentation.adapters.VideoAdapter
+import com.example.videostream.viewmodel.VideoViewModel
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding : FragmentHomeBinding
+
+    //recycler
+    private lateinit var videoRecycler : RecyclerView
+    private lateinit var videoAdapter: VideoAdapter
+    private var videoList : MutableList<Video> = mutableListOf()
+
+    //view models
+    private lateinit var videoViewModel : VideoViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +38,28 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //initialize
+        videoViewModel = ViewModelProvider(requireActivity()).get(VideoViewModel::class.java)
 
+        //set recycler
+        videoRecycler = binding.homeVideoRecycler
+        videoRecycler.layoutManager = LinearLayoutManager(requireContext())
+
+        videoAdapter = VideoAdapter(requireContext() , videoList)
+        videoRecycler.adapter = videoAdapter
+
+        //load videos
+        videoViewModel.videos.observe(viewLifecycleOwner){videos ->
+            videoList.clear()
+            videoList.addAll(videos)
+            videoAdapter.notifyDataSetChanged()
+
+        }
+        videoViewModel.getVideos(5)
+
+
+
+        //change user
         binding.mainUserSelectLayout.setOnClickListener{
             val users = UsersFragment()
             users.show(parentFragmentManager, "UserBottomSheet" )

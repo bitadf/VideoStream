@@ -4,17 +4,22 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.videostream.R
-import com.example.videostream.data.dataclasses.VideoImage
+import com.example.videostream.data.dataclasses.Video
+import com.example.videostream.utils.Duration
 
 class VideoAdapter (
     private val context: Context ,
-    private val videoList : List<VideoImage>
+    private val videoList : List<Video>
 ) : RecyclerView.Adapter<VideoAdapter.ViewHolder>(){
 
     class ViewHolder(view : View): RecyclerView.ViewHolder(view){
-
+        val videoImage : AppCompatImageView = view.findViewById(R.id.video_card_image)
+        val videoDuration : TextView = view.findViewById(R.id.video_card_duration)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,8 +32,18 @@ class VideoAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val current = videoList[position]
+        val currentVideo = videoList[position]
+
+        //set image
+        Glide.with(context)
+            .asBitmap()
+            .load(currentVideo.url)
+            .frame(1000000)
+            .into(holder.videoImage)
+
+        holder.videoDuration.text = Duration.formatDurationToVideoTime(currentVideo.duration)
 
     }
+
 
 }

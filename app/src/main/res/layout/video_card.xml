@@ -15,6 +15,8 @@
     >
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_card_play_icon"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/main_play_icon"
@@ -28,6 +30,7 @@
 
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_card_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:src="@drawable/test_image"
@@ -48,6 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="16sp"
         android:layout_marginVertical="12sp"
+        android:elevation="6dp"
         >
 
         <LinearLayout
@@ -62,6 +66,7 @@
                 android:gravity="center"
                 />
             <TextView
+                android:id="@+id/video_card_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/time_test"

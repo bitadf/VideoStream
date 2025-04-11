@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.utils.immutableListBuilder
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -54,5 +56,12 @@ dependencies {
     //retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit2.converter.gson)
-    
+
+    //video image
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
+
+    //livedata && viewmodel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata)
 }
