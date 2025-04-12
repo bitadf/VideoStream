@@ -1,6 +1,7 @@
 package com.example.videostream.presentation.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +9,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.videostream.R
 import com.example.videostream.data.dataclasses.Video
 import com.example.videostream.databinding.FragmentHomeBinding
 import com.example.videostream.presentation.adapters.VideoAdapter
+import com.example.videostream.utils.Constants.PLAY_VIDEO
+import com.example.videostream.utils.FragmentChanging
 import com.example.videostream.viewmodel.VideoViewModel
 
 
@@ -45,7 +47,15 @@ class HomeFragment : Fragment() {
         videoRecycler = binding.homeVideoRecycler
         videoRecycler.layoutManager = LinearLayoutManager(requireContext())
 
-        videoAdapter = VideoAdapter(requireContext() , videoList)
+        videoAdapter = VideoAdapter(requireContext() , videoList) { _, video ->
+
+            FragmentChanging.passVideoToFragment(
+                parentFragmentManager,
+                video,
+
+            )
+
+        }
         videoRecycler.adapter = videoAdapter
 
         //load videos

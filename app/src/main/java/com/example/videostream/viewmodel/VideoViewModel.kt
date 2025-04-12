@@ -18,6 +18,33 @@ class VideoViewModel : ViewModel() {
     private val _videos = MutableLiveData<List<Video>>(emptyList())
     val videos : LiveData<List<Video>> = _videos
 
+
+
+    fun findNextVideo(id : Int , direction : Int) : Video?{
+        //direction == 1 next
+        //direction == -1 previews
+        val videoList = _videos.value
+        if(!videoList.isNullOrEmpty()){
+            for(i in videoList.indices){
+                if(videoList[i].id == id){
+
+                    if(direction == 1 ){
+                        if(i < videoList.size)return videoList[i + 1]
+                        else return videoList[0]
+                    }
+
+                    if (direction == -1 ){
+                        if((i - 1) >= 0 )return videoList[i - 1]
+                        else return videoList[videoList.size - 1]
+                    }
+                }
+            }
+        }
+        return null
+
+
+    }
+
     fun getVideos(offset : Int){
         viewModelScope.launch {
             val videoResponse = videoRep.getVideos(offset)

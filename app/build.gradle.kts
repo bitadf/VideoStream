@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.utils.immutableListBuilder
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -64,4 +65,7 @@ dependencies {
     //livedata && viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata)
+
+    //exoplayer
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
 }

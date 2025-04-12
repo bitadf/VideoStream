@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/transparent"
+    android:layoutDirection="rtl"
+    android:id="@+id/video_controller"
+    android:padding="21sp">
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_back_home"
+        android:layout_width="53sp"
+        android:layout_height="53sp"
+        android:src="@drawable/player_back_icon"
+        android:layout_gravity="clip_vertical "
+        />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_forward"
+        android:layout_width="67sp"
+        android:layout_height="67sp"
+        android:src="@drawable/forward_icon"
+        android:layout_gravity="center_vertical|start"
+        />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_backward"
+        android:layout_width="67sp"
+        android:layout_height="67sp"
+        android:src="@drawable/backward_icon"
+        android:layout_gravity="center_vertical|end"
+        />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/video_pause"
+        android:layout_width="123sp"
+        android:layout_height="123sp"
+        android:src="@drawable/play_icon"
+        android:layout_gravity="center_vertical|center"
+
+        />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:padding="21sp"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <TextView
+                    android:id="@+id/video_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+
+
+                    />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13sp"
+                    android:orientation="horizontal">
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/main_user_icon"
+                        android:layout_width="24sp"
+                        android:layout_height="24sp"
+                        android:src="@drawable/ultra_small_user_icon"
+                        android:layout_gravity="center"
+                        />
+                    <TextView
+                        android:id="@+id/main_user_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/first_user"
+                        android:textSize="19sp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="9sp"
+
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="57sp"
+                android:layout_height="57sp"
+                android:src="@drawable/play_video_empty_like"
+                android:layout_alignParentEnd="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+               />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/video_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="0"
+            android:layout_marginTop="13sp"
+            app:trackThickness="6sp"
+
+
+
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+
+            >
+            <TextView
+                android:id="@+id/video_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="19sp"
+                android:text="00:00"
+                android:layout_alignParentEnd="true"
+
+
+
+                />
+            <TextView
+                android:id="@+id/video_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="19sp"
+                android:text="03:00"
+                android:layout_gravity="center_vertical|start"
+                android:layout_alignParentStart="true"
+                />
+
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+
+    
+
+
+</FrameLayout>

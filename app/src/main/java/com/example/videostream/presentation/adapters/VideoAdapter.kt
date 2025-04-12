@@ -11,15 +11,18 @@ import com.bumptech.glide.Glide
 import com.example.videostream.R
 import com.example.videostream.data.dataclasses.Video
 import com.example.videostream.utils.Duration
+import com.google.android.material.card.MaterialCardView
 
 class VideoAdapter (
     private val context: Context ,
-    private val videoList : List<Video>
+    private val videoList : List<Video> ,
+    private val onItemClick : ((position : Int , item:Video) -> Unit )? =null
 ) : RecyclerView.Adapter<VideoAdapter.ViewHolder>(){
 
     class ViewHolder(view : View): RecyclerView.ViewHolder(view){
         val videoImage : AppCompatImageView = view.findViewById(R.id.video_card_image)
         val videoDuration : TextView = view.findViewById(R.id.video_card_duration)
+        val videoCard : MaterialCardView = view.findViewById(R.id.video_card)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -42,6 +45,12 @@ class VideoAdapter (
             .into(holder.videoImage)
 
         holder.videoDuration.text = Duration.formatDurationToVideoTime(currentVideo.duration)
+
+        holder.videoCard.setOnClickListener{
+            onItemClick?.invoke(position ,currentVideo)
+        }
+
+
 
     }
 

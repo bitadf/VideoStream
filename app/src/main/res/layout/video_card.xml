@@ -7,6 +7,7 @@
     app:cardCornerRadius="10dp"
     app:strokeColor="@color/black_safflower2"
     android:layout_marginTop="13sp"
+    android:id="@+id/video_card"
     >
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
