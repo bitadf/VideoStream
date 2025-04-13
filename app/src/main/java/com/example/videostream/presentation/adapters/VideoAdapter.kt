@@ -1,5 +1,6 @@
 package com.example.videostream.presentation.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,18 +12,30 @@ import com.bumptech.glide.Glide
 import com.example.videostream.R
 import com.example.videostream.data.dataclasses.Video
 import com.example.videostream.utils.Duration
+import com.example.videostream.viewmodel.RoomVideoViewModel
 import com.google.android.material.card.MaterialCardView
 
 class VideoAdapter (
     private val context: Context ,
     private val videoList : List<Video> ,
-    private val onItemClick : ((position : Int , item:Video) -> Unit )? =null
+    private val onItemClick : ((position : Int , item:Video ) -> Unit )? = null
+
 ) : RecyclerView.Adapter<VideoAdapter.ViewHolder>(){
+
+    private val likedIds = mutableSetOf<Int>()
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateLiked(newId : Set<Int>){
+        likedIds.clear()
+        likedIds.addAll(newId)
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(view : View): RecyclerView.ViewHolder(view){
         val videoImage : AppCompatImageView = view.findViewById(R.id.video_card_image)
         val videoDuration : TextView = view.findViewById(R.id.video_card_duration)
         val videoCard : MaterialCardView = view.findViewById(R.id.video_card)
+        val likeIcon : AppCompatImageView = view.findViewById(R.id.main_liked_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,6 +50,23 @@ class VideoAdapter (
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentVideo = videoList[position]
 
+        holder.likeIcon.setImageResource(
+            if (likedIds.contains(currentVideo.id))R.drawable.small_filled_like
+            else R.drawable.small_empty_like
+        )
+        holder.likeIcon.setOnClickListener{
+//            viewModel.addVideo(currentVideo , )
+            if (likedIds.contains(currentVideo.id)){
+                //delete from db
+                holder.likeIcon.setImageResource(R.drawable.small_empty_like)
+            }
+            else {
+                //add to room db
+                holder.likeIcon.setImageResource(R.drawable.small_filled_like)
+            }
+
+        }
+
         //set image
         Glide.with(context)
             .asBitmap()
@@ -49,6 +79,10 @@ class VideoAdapter (
         holder.videoCard.setOnClickListener{
             onItemClick?.invoke(position ,currentVideo)
         }
+
+
+
+
 
 
 

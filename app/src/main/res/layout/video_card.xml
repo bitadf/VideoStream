@@ -6,7 +6,7 @@
     android:layoutDirection="rtl"
     app:cardCornerRadius="10dp"
     app:strokeColor="@color/black_safflower2"
-    android:layout_marginTop="13sp"
+    android:layout_marginTop="13dp"
     android:id="@+id/video_card"
     >
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,8 +50,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginHorizontal="16sp"
-        android:layout_marginVertical="12sp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="12dp"
         android:elevation="6dp"
         >
 
@@ -72,8 +72,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/time_test"
                 android:textSize="19sp"
-                android:layout_marginTop="13sp"
-                android:layout_marginStart="5sp"
+                android:layout_marginTop="13dp"
+                android:layout_marginStart="5dp"
 
 
 
@@ -85,12 +85,12 @@
             android:text="@string/lormipsom"
             android:textSize="21sp"
             android:textStyle="bold"
-            android:layout_marginTop="13sp"
+            android:layout_marginTop="13dp"
             />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="13sp"
+            android:layout_marginTop="13dp"
             >
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -99,8 +99,8 @@
                 android:layout_alignParentStart="true">
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/main_user_icon"
-                    android:layout_width="24sp"
-                    android:layout_height="24sp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ultra_small_user_icon"
                     android:layout_gravity="center"
                     />
@@ -111,13 +111,13 @@
                     android:text="@string/first_user"
                     android:textSize="19sp"
                     android:layout_gravity="center"
-                    android:layout_marginStart="9sp"
+                    android:layout_marginStart="9dp"
                     />
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/main_liked_icon"
-                android:layout_width="36sp"
-                android:layout_height="32sp"
+                android:layout_width="36dp"
+                android:layout_height="32dp"
                 android:src="@drawable/small_filled_like"
                 android:layout_gravity="center"
                 android:layout_marginStart="13sp"

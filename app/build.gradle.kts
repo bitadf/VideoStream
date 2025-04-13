@@ -3,7 +3,8 @@ import com.android.build.gradle.internal.utils.immutableListBuilder
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-parcelize")
+
+    id("kotlin-kapt")
 }
 
 android {
@@ -60,12 +61,19 @@ dependencies {
 
     //video image
     implementation(libs.glide)
-    annotationProcessor(libs.glide.compiler)
+    kapt(libs.glide.compiler)
 
     //livedata && viewmodel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata)
 
     //exoplayer
-    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation(libs.exoplayer)
+
+
+    //roomDatabase
+
+    implementation(libs.androidx.room.runtime)
+    kapt("androidx.room:room-compiler:2.7.0")
+    implementation(libs.androidx.room.ktx)
 }

@@ -6,32 +6,32 @@
     android:background="@android:color/transparent"
     android:layoutDirection="rtl"
     android:id="@+id/video_controller"
-    android:padding="21sp">
+    android:padding="21dp">
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/video_back_home"
-        android:layout_width="53sp"
-        android:layout_height="53sp"
+        android:layout_width="53dp"
+        android:layout_height="53dp"
         android:src="@drawable/player_back_icon"
-        android:layout_gravity="clip_vertical "
+        android:layout_gravity="clip_vertical"
         />
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/video_forward"
-        android:layout_width="67sp"
-        android:layout_height="67sp"
+        android:layout_width="67dp"
+        android:layout_height="67dp"
         android:src="@drawable/forward_icon"
         android:layout_gravity="center_vertical|start"
         />
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/video_backward"
-        android:layout_width="67sp"
-        android:layout_height="67sp"
+        android:layout_width="67dp"
+        android:layout_height="67dp"
         android:src="@drawable/backward_icon"
         android:layout_gravity="center_vertical|end"
         />
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/video_pause"
-        android:layout_width="123sp"
-        android:layout_height="123sp"
+        android:layout_width="123dp"
+        android:layout_height="123dp"
         android:src="@drawable/play_icon"
         android:layout_gravity="center_vertical|center"
 
@@ -71,12 +71,12 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="13sp"
+                    android:layout_marginTop="13dp"
                     android:orientation="horizontal">
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/main_user_icon"
-                        android:layout_width="24sp"
-                        android:layout_height="24sp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ultra_small_user_icon"
                         android:layout_gravity="center"
                         />
@@ -87,15 +87,15 @@
                         android:text="@string/first_user"
                         android:textSize="19sp"
                         android:layout_gravity="center"
-                        android:layout_marginStart="9sp"
+                        android:layout_marginStart="9dp"
 
                         />
 
                 </LinearLayout>
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="57sp"
-                android:layout_height="57sp"
+                android:layout_width="57dp"
+                android:layout_height="57dp"
                 android:src="@drawable/play_video_empty_like"
                 android:layout_alignParentEnd="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -110,8 +110,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:min="0"
-            android:layout_marginTop="13sp"
-            app:trackThickness="6sp"
+            android:layout_marginTop="13dp"
+            app:trackThickness="6dp"
 
 
 
@@ -148,8 +148,4 @@
 
 
     </LinearLayout>
-
-    
-
-
 </FrameLayout>

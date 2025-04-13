@@ -9,4 +9,6 @@ object Constants {
         const val PLAY_VIDEO_TITLE = "video_title"
         const val PLAY_VIDEO_URL = "video_url"
         const val PLAY_VIDEO_DUR = "video_dur"
+
+        const val DATA_BASE = "user_video_database"
 }

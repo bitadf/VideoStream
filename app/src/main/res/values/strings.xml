@@ -3,6 +3,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="first_user">کاربر اول</string>
+    <string name="second_user">کاربر دوم</string>
     <string name="liked">لایک شده ها</string>
     <string name="video_time">مدت زمان ویديو: </string>
     <string name="lormipsom">لورم ایپسوم متن ساختگی</string>
