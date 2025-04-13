@@ -1,6 +1,7 @@
 package com.example.videostream.utils
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.videostream.R
 import com.example.videostream.data.dataclasses.Video
@@ -32,6 +33,13 @@ object FragmentChanging {
 
         fragmentManager.beginTransaction()
             .replace(R.id.main_frame , HomeFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+    fun change(fragmentManager: FragmentManager , fragment: Fragment){
+
+        fragmentManager.beginTransaction()
+            .replace(R.id.main_frame , fragment)
             .addToBackStack(null)
             .commit()
     }

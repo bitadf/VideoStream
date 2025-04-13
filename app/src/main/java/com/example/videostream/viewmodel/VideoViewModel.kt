@@ -45,16 +45,17 @@ class VideoViewModel : ViewModel() {
 
     }
 
-    fun getVideos(offset : Int){
+    fun getVideos(offset: Int) {
         viewModelScope.launch {
             val videoResponse = videoRep.getVideos(offset)
-            if(videoResponse.isSuccessful && videoResponse.body()?.done == true){
-                _videos.postValue(videoResponse.body()!!.result.videos)
-            }
-            else{
-                    Log.d(VIDEO_API , "Error: done=false or unsuccessful")
-
+            if (videoResponse.isSuccessful && videoResponse.body()?.done == true) {
+                val newVideos = videoResponse.body()!!.result.videos
+                val currentVideos = _videos.value ?: emptyList()
+                _videos.postValue(currentVideos + newVideos)
+            } else {
+                Log.d(VIDEO_API, "Error: done=false or unsuccessful")
             }
         }
     }
+
 }

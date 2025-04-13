@@ -11,4 +11,8 @@ class SharedViewModel : ViewModel() {
     fun setCurrentUser(userId: Int) {
         _currentUserId.value = userId
     }
+    fun getCurrentUser () : Int{
+        return _currentUserId.value?.toInt() ?: 1
+    }
+
 }

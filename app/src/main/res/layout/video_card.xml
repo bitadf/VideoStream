@@ -105,7 +105,7 @@
                     android:layout_gravity="center"
                     />
                 <TextView
-                    android:id="@+id/main_user_text"
+                    android:id="@+id/video_card_user_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/first_user"

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val userRep = UserDataBaseRepository(userDao)
 
         userViewModel = ViewModelProvider(this ,
-            UserDatabaseViewModelFactory(userRep) ).get(RoomUserViewModel::class.java)
+            UserDatabaseViewModelFactory(userRep)).get(RoomUserViewModel::class.java)
 
         lifecycleScope.launch {
             userViewModel.addUser(UserDataBase(1, R.string.first_user.toString()))

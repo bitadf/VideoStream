@@ -20,4 +20,7 @@ class VideoDataBaseRepository(
     suspend fun delete(videoId : Int , userId: Int){
         videoDao.deleteVideo(videoId , userId)
     }
+    suspend fun videoExists(videoId: Int, userId: Int): Boolean {
+        return videoDao.videoExists(videoId, userId) > 0
+    }
 }

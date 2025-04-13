@@ -27,6 +27,7 @@
             android:textSize="24sp"
             />
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/like_back_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_arrow_back_ios_new_24"
@@ -35,11 +36,13 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/liked_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/liked_title_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="21dp"
 
         />
 

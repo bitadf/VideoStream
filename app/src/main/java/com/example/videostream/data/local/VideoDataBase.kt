@@ -13,7 +13,8 @@ import androidx.room.PrimaryKey
     )]
 )
 data class VideoDataBase(
-    @PrimaryKey val videoId : Int = 0 ,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val videoId : Int  ,
     val title : String ,
     val url : String ,
     val duration : Double ,

@@ -12,7 +12,7 @@ import kotlinx.coroutines.internal.synchronized
 
 @Database(
     entities = [UserDataBase::class , VideoDataBase::class] ,
-    version = 2
+    version = 3
 )
 abstract class DataBase : RoomDatabase() {
     abstract fun userDao() : UserDataBaseDao
@@ -29,7 +29,10 @@ abstract class DataBase : RoomDatabase() {
                     context.applicationContext,
                     DataBase::class.java,
                     DATA_BASE
-                ).build()
+
+                ).fallbackToDestructiveMigration(true)
+                    .build()
+
                 instance = newInstance
                 newInstance
             }
