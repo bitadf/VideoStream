@@ -18,7 +18,6 @@ import com.example.videostream.data.dataclasses.Video
 import com.example.videostream.data.local.DataBase
 import com.example.videostream.data.repository.VideoDataBaseRepository
 import com.example.videostream.databinding.FragmentVideoPlayerBinding
-
 import com.example.videostream.utils.Constants.PLAY_VIDEO_DUR
 import com.example.videostream.utils.Constants.PLAY_VIDEO_ID
 import com.example.videostream.utils.Constants.PLAY_VIDEO_TITLE
@@ -34,14 +33,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class VideoPlayerFragment : Fragment() {
-    private lateinit var binding : FragmentVideoPlayerBinding
+    private lateinit var binding: FragmentVideoPlayerBinding
 
-    private lateinit var video : ExoPlayer
-    private var videoObject : Video? = null
+    private var video: ExoPlayer? = null
+    private var videoObject: Video? = null
+    private var currentPosition: Long = 0
+    private var playWhenReady: Boolean = true
 
     private lateinit var viewModel: VideoViewModel
     private lateinit var roomVideoViewModel: RoomVideoViewModel
-    private lateinit var sharedPref : SharedViewModel
+    private lateinit var sharedPref: SharedViewModel
 
     private var progressJob: Job? = null
 
@@ -53,10 +54,10 @@ class VideoPlayerFragment : Fragment() {
         val url = arguments?.getString(PLAY_VIDEO_URL)
         val id = arguments?.getInt(PLAY_VIDEO_ID)
         val dur = arguments?.getDouble(PLAY_VIDEO_DUR)
-        if(title != null && url != null && id != null && dur != null){
-            videoObject = Video(id , title , url , dur)
+        if (title != null && url != null && id != null && dur != null) {
+            videoObject = Video(id, title, url, dur)
         }
-        binding = FragmentVideoPlayerBinding.inflate(layoutInflater , container , false)
+        binding = FragmentVideoPlayerBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -66,86 +67,32 @@ class VideoPlayerFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(VideoViewModel::class.java)
         sharedPref = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        if(videoObject != null){
-            video = ExoPlayer.Builder(requireContext()).build()
-            binding.videoPlayerVideo.player = video
+        if (videoObject != null) {
+            if (video == null) {
+                video = ExoPlayer.Builder(requireContext()).build()
+                binding.videoPlayerVideo.player = video
 
-            video.addListener(object  : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    if (playbackState == Player.STATE_ENDED) {
-                        videoEnd()
+                video?.addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        if (playbackState == Player.STATE_ENDED) {
+                            videoEnd()
+                        }
                     }
-                }
-            })
+                })
+            }
 
             val videoInstance = com.google.android.exoplayer2.MediaItem.fromUri(videoObject!!.url)
-            video.setMediaItem(videoInstance)
-            video.prepare()
-            video.playWhenReady = true
+            video?.setMediaItem(videoInstance)
+            video?.prepare()
+            video?.seekTo(currentPosition)
+            video?.playWhenReady = playWhenReady
 
-            val pause = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_pause)
-            val forward = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_forward)
-            val backward = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_backward)
-            val duration = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_duration)
-            val seekBar = binding.videoPlayerVideo.findViewById<LinearProgressIndicator>(R.id.video_seekbar)
-            val passedTime = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_current_time)
-            val title = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_title)
-            val back = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_back_home)
-            val userText = binding.videoPlayerVideo.findViewById<TextView>(R.id.main_user_text)
-            val likeIcon = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_like_icon)
-
-            forward.setOnClickListener {
-                val nextVideo = viewModel.findNextVideo(videoObject!!.id , 1)
-                if (nextVideo != null) {
-                    playVideo(nextVideo)
-                }
-            }
-
-            backward.setOnClickListener {
-                val previousVideo = viewModel.findNextVideo(videoObject!!.id , -1)
-                if(previousVideo != null){
-                    playVideo(previousVideo)
-                }
-            }
-
-            pause.setOnClickListener {
-                playPauseHandling(pause)
-            }
-
-            title.text = videoObject!!.title
-            duration.text = Duration.formatDurationToVideoTime(videoObject!!.duration)
-            seekBar.max = (videoObject!!.duration * 1000).toInt()
-            seekBar.progress = 0
-            passedTime.text = "00:00"
-
-            startProgressUpdater()
-
-            back.setOnClickListener {
-                FragmentChanging.backHome(parentFragmentManager)
-            }
-
-            val dataBase = DataBase.getDatabase(requireActivity())
-            val videoDao = dataBase.videoDao()
-            val videoRep = VideoDataBaseRepository(videoDao , VideoMapper())
-            roomVideoViewModel = ViewModelProvider(requireActivity(),
-                VideoDatabaseViewModelFactory(videoRep)).get(RoomVideoViewModel::class.java)
-
-            roomVideoViewModel.likedIds.observe(viewLifecycleOwner) { ids ->
-                if(ids.contains(videoObject!!.id)) {
-                    likeIcon.setImageResource(R.drawable.small_filled_like)
-                } else {
-                    likeIcon.setImageResource(R.drawable.play_video_empty_like)
-                }
-            }
-
-            sharedPref.currentUserId.observe(viewLifecycleOwner) {
-                if(it == 1) userText.text = getString(R.string.first_user)
-                else userText.text = getString(R.string.second_user)
-            }
+            setupControls()
         }
+
         sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
             when (count) {
-                4, 8, 12 -> FragmentChanging.changePassInt(
+                    4, 8, 12 -> FragmentChanging.changePassInt(
                     parentFragmentManager,
                     AdsFragment(),
                     0,
@@ -156,10 +103,72 @@ class VideoPlayerFragment : Fragment() {
             }
         }
 
-
         //onBackPressed
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             FragmentChanging.backHome(parentFragmentManager)
+        }
+    }
+
+    private fun setupControls() {
+        val pause = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_pause)
+        val forward = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_forward)
+        val backward = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_backward)
+        val duration = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_duration)
+        val seekBar = binding.videoPlayerVideo.findViewById<LinearProgressIndicator>(R.id.video_seekbar)
+        val passedTime = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_current_time)
+        val title = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_title)
+        val back = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_back_home)
+        val userText = binding.videoPlayerVideo.findViewById<TextView>(R.id.main_user_text)
+        val likeIcon = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_like_icon)
+
+        forward.setOnClickListener {
+            val nextVideo = viewModel.findNextVideo(videoObject!!.id, 1)
+            if (nextVideo != null) {
+                playVideo(nextVideo)
+            }
+        }
+
+        backward.setOnClickListener {
+            val previousVideo = viewModel.findNextVideo(videoObject!!.id, -1)
+            if (previousVideo != null) {
+                playVideo(previousVideo)
+            }
+        }
+
+        pause.setOnClickListener {
+            playPauseHandling(pause)
+        }
+
+        title.text = videoObject!!.title
+        duration.text = Duration.formatDurationToVideoTime(videoObject!!.duration)
+        seekBar.max = (videoObject!!.duration * 1000).toInt()
+        seekBar.progress = 0
+        passedTime.text = "00:00"
+
+        startProgressUpdater()
+
+        back.setOnClickListener {
+            FragmentChanging.backHome(parentFragmentManager)
+        }
+
+        // Save the like status from the database
+        val dataBase = DataBase.getDatabase(requireActivity())
+        val videoDao = dataBase.videoDao()
+        val videoRep = VideoDataBaseRepository(videoDao, VideoMapper())
+        roomVideoViewModel = ViewModelProvider(requireActivity(),
+            VideoDatabaseViewModelFactory(videoRep)).get(RoomVideoViewModel::class.java)
+
+        roomVideoViewModel.likedIds.observe(viewLifecycleOwner) { ids ->
+            if (ids.contains(videoObject!!.id)) {
+                likeIcon.setImageResource(R.drawable.small_filled_like)
+            } else {
+                likeIcon.setImageResource(R.drawable.play_video_empty_like)
+            }
+        }
+
+        sharedPref.currentUserId.observe(viewLifecycleOwner) {
+            if (it == 1) userText.text = getString(R.string.first_user)
+            else userText.text = getString(R.string.second_user)
         }
     }
 
@@ -170,7 +179,7 @@ class VideoPlayerFragment : Fragment() {
 
         progressJob = lifecycleScope.launch {
             while (true) {
-                val current = video.currentPosition
+                val current = video?.currentPosition ?: 0
                 passedTime.text = Duration.formatDurationToVideoTime(current / 1000.0)
                 seekBar.progress = current.toInt()
                 delay(500)
@@ -180,31 +189,34 @@ class VideoPlayerFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        video.pause()
+        // Save the current state of the player
+        currentPosition = video?.currentPosition ?: 0
+        playWhenReady = video?.playWhenReady == true
+        video?.pause()
     }
 
     override fun onDestroyView() {
         progressJob?.cancel()
-        video.release()
+        video?.release()
         super.onDestroyView()
     }
 
-    fun playPauseHandling(icon : AppCompatImageView){
-        if(video.isPlaying){
-            video.pause()
+    fun playPauseHandling(icon: AppCompatImageView) {
+        if (video?.isPlaying == true) {
+            video?.pause()
             icon.setImageResource(R.drawable.pause_icon)
         } else {
-            video.play()
+            video?.play()
             icon.setImageResource(R.drawable.play_icon)
         }
     }
 
-    fun playVideo(videoObj: Video){
+    fun playVideo(videoObj: Video) {
         videoObject = videoObj
         val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoObj.url)
-        video.setMediaItem(mediaItem)
-        video.prepare()
-        video.playWhenReady = true
+        video?.setMediaItem(mediaItem)
+        video?.prepare()
+        video?.playWhenReady = true
 
         val title = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_title)
         val duration = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_duration)
@@ -220,24 +232,7 @@ class VideoPlayerFragment : Fragment() {
         startProgressUpdater()
     }
 
-//    fun videoEnd() {
-//        sharedPref.addVideoCount()
-//        sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
-//
-//            when (count) {
-//                4, 8, 12 -> FragmentChanging.changePassInt(
-//                    parentFragmentManager,
-//                    AdsFragment(),
-//                    0,
-//                    "ad"
-//                )
-//
-//                16 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 1, "ad")
-//                20 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 2, "ad")
-//            }
-//        }
-//    }
-fun videoEnd() {
-    sharedPref.addVideoCount()
-}
+    fun videoEnd() {
+        sharedPref.addVideoCount()
+    }
 }

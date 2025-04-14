@@ -43,13 +43,14 @@ object FragmentChanging {
             .addToBackStack(null)
             .commit()
     }
-    fun changePassInt(fragmentManager: FragmentManager , fragment: Fragment , value : Int , key:String){
+    fun changePassInt(fragmentManager: FragmentManager , fragment: Fragment , value : Int? = null , key:String? = null){
         val bundle = Bundle()
+        if(value!= null && key!=null){
         bundle.putInt(key , value)
-        fragment.arguments = bundle
+        fragment.arguments = bundle}
         fragmentManager.beginTransaction()
             .replace(R.id.main_frame , fragment)
-            .addToBackStack(null)
+
             .commit()
 
     }

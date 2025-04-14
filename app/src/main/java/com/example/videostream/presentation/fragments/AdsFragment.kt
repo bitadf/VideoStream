@@ -2,20 +2,12 @@ package com.example.videostream.presentation.fragments
 
 import VideoMapper
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -38,15 +30,13 @@ import kotlinx.coroutines.launch
 
 class AdsFragment : Fragment() {
 
-    private lateinit var binding : FragmentAdsBinding
+    private lateinit var binding: FragmentAdsBinding
 
     private lateinit var viewModel: VideoViewModel
     private lateinit var roomVideoViewModel: RoomVideoViewModel
-    private lateinit var sharedPref : SharedViewModel
+    private lateinit var sharedPref: SharedViewModel
 
-    private var escapeFlag : Boolean = false
-
-    private var adId : Int = 0
+    private var adId: Int = 0
 
     private lateinit var backPressedCallback: OnBackPressedCallback
     private lateinit var adPlayer: ExoPlayer
@@ -54,10 +44,8 @@ class AdsFragment : Fragment() {
     private var adTimerJob: Job? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         adId = arguments?.getInt("ad") ?: 0
         binding = FragmentAdsBinding.inflate(inflater, container, false)
         return binding.root
@@ -68,62 +56,47 @@ class AdsFragment : Fragment() {
 
         val dataBase = DataBase.getDatabase(requireActivity())
         val videoDao = dataBase.videoDao()
-        val videoRep = VideoDataBaseRepository(videoDao , VideoMapper())
+        val videoRep = VideoDataBaseRepository(videoDao, VideoMapper())
 
-        roomVideoViewModel = ViewModelProvider(requireActivity()
-            , VideoDatabaseViewModelFactory(videoRep)).get(
-                RoomVideoViewModel::class.java
-            )
+        roomVideoViewModel = ViewModelProvider(
+            requireActivity(), VideoDatabaseViewModelFactory(videoRep)
+        ).get(RoomVideoViewModel::class.java)
+
         sharedPref = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-
         viewModel = ViewModelProvider(requireActivity()).get(VideoViewModel::class.java)
 
-        if(adId == 0){
-            viewModel.getFirstAd()
+        if (adId == 0) viewModel.getFirstAd()
+        else if (adId == 1) viewModel.getSecondAd()
+        else viewModel.getThirdAd()
 
-        }else if (adId == 1){
-            viewModel.getSecondAd()
-
-
-        }else {
-            viewModel.getThirdAd()
-        }
-        viewModel.ad.observe(viewLifecycleOwner){
+        viewModel.ad.observe(viewLifecycleOwner) {
             playAd(it)
         }
+
         backPressedCallback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
-                adPlayer.stop()
-                adPlayer.release()
-                parentFragmentManager.popBackStack()
+                stopAdAndGoToVideoPlayer()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
-
-
-
-
-
-
     }
 
-    fun updateUISecondsLeft(time : Int) {
+    private fun updateUISecondsLeft(time: Int) {
         val controllerView = binding.videoAdPlayer.findViewById<View>(R.id.ad_controller)
         val layout = controllerView.findViewById<LinearLayout>(R.id.skip_ad_layout)
-        val icon = controllerView.findViewById<AppCompatImageView>(R.id.skip_ad_icon)
+        val icon = controllerView.findViewById<View>(R.id.skip_ad_icon)
         val remainedTime = controllerView.findViewById<TextView>(R.id.skip_ad_remained_time)
         val dots = controllerView.findViewById<TextView>(R.id.skip_ad_dots)
         val sec = controllerView.findViewById<TextView>(R.id.skip_ad_seconds_text)
 
         remainedTime.text = time.toString()
-        layout.visibility =View.VISIBLE
-        if(time > 0) {
+        layout.visibility = View.VISIBLE
+        if (time > 0) {
             icon.visibility = View.GONE
             remainedTime.visibility = View.VISIBLE
             dots.visibility = View.VISIBLE
             sec.visibility = View.VISIBLE
-        }
-        else{
+        } else {
             icon.visibility = View.VISIBLE
             remainedTime.visibility = View.GONE
             dots.visibility = View.GONE
@@ -131,9 +104,7 @@ class AdsFragment : Fragment() {
         }
     }
 
-
-
-    fun playAd(ad: Video) {
+    private fun playAd(ad: Video) {
         adPlayer = ExoPlayer.Builder(requireContext()).build()
         binding.videoAdPlayer.player = adPlayer
 
@@ -142,86 +113,72 @@ class AdsFragment : Fragment() {
         adPlayer.prepare()
         adPlayer.playWhenReady = true
 
-
         val controllerView = binding.videoAdPlayer.findViewById<View>(R.id.ad_controller)
-
         val title = controllerView.findViewById<TextView>(R.id.ad_title)
         val duration = controllerView.findViewById<TextView>(R.id.ad_duration)
         val seekBar = controllerView.findViewById<LinearProgressIndicator>(R.id.ad_seekbar)
         val passedTime = controllerView.findViewById<TextView>(R.id.ad_passed_time)
+        val skipLayout = controllerView.findViewById<LinearLayout>(R.id.skip_ad_layout)
 
         title.text = ad.title
         duration.text = Duration.formatDurationToVideoTime(ad.duration)
         seekBar.max = (ad.duration * 1000).toInt()
         seekBar.progress = 0
-
         passedTime.text = "00:00"
 
-
-        // seekbar + timer
         var count = 4
-        //var lastDisplayedSecond = -1
-        lifecycleScope.launch {
+
+        adTimerJob = lifecycleScope.launch {
             while (true) {
+                val current = adPlayer.currentPosition
+                passedTime.text = Duration.formatDurationToVideoTime(current / 1000.0)
+                seekBar.progress = current.toInt()
+                delay(500)
 
-                    val current = adPlayer.currentPosition
-                    passedTime.text = Duration.formatDurationToVideoTime(current / 1000.0)
-                    seekBar.progress = current.toInt()
-                    delay(500)
-
-//                    val timeLeft = 15000 - current
-//                    Log.i("TTTTT" , timeLeft.toString())
-
-//                val current = adPlayer.currentPosition
                 val timeLeft = 15000 - current
-//
-//                if (timeLeft in 1000..4000) {
-//                    val secondsLeft = (timeLeft / 1000).toInt() + 1  // Round up to nearest second
-//
-//                    if (secondsLeft != lastDisplayedSecond) {
-//                        updateUISecondsLeft(secondsLeft)
-//                        lastDisplayedSecond = secondsLeft
-//                    }
-//                }
-//
-//                if (timeLeft <= 0) {
-//                    updateUISecondsLeft(0)
-//                }
-                    if (timeLeft <= 4000) {
-                        //updateUISecondsLeft(3)
-//                        when {
-//                            timeLeft >= 3000 -> updateUISecondsLeft(3)
-//                            timeLeft >= 2000 -> updateUISecondsLeft(2)
-//                            else -> updateUISecondsLeft(1)
-//                        }
-                        updateUISecondsLeft(count--)
+                if (timeLeft <= 4000) {
+                    updateUISecondsLeft(count--)
+                }
+
+                if (current >= 15000) {
+                    backPressedCallback.isEnabled = true
+                    skipLayout.setOnClickListener {
+//                        adTimerJob?.cancel()
+//                        adPlayer.stop()
+//                        adPlayer.release()
+//                        stopAdAndGoToVideoPlayer()
+//                        requireActivity().supportFragmentManager
+//                            .beginTransaction()
+//                            .remove(requireActivity().supportFragmentManager.findFragmentByTag("ad")!!)
+//                            .commit()
+                        requireActivity().supportFragmentManager.popBackStack()
                     }
-                    if (current >= 15000) {
-                        backPressedCallback.isEnabled = true
-                        //updateUISecondsLeft(0)
-                        // Enable skipping now
-                        val skipLayout = controllerView.findViewById<LinearLayout>(R.id.skip_ad_layout)
-                        skipLayout.setOnClickListener {
-                            adTimerJob?.cancel()
-                           // FragmentChanging.change(parentFragmentManager, VideoPlayerFragment())
-                            adPlayer.stop()
-                            adPlayer.release()
-
-                            parentFragmentManager.popBackStack()
-                        }
-                        break
-
-                    }
-
-
-
+                    break
+                }
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun stopAdAndGoToVideoPlayer() {
         adTimerJob?.cancel()
+        adPlayer.stop()
         adPlayer.release()
+        backPressedCallback.isEnabled = false
+
+        //parentFragmentManager.popBackStack()
+       // requireActivity().supportFragmentManager.popBackStack()
+
+
+//        lifecycleScope.launchWhenResumed {
+//            FragmentChanging.change(
+//                parentFragmentManager, VideoPlayerFragment()
+//            )
+//        }
     }
+
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        adTimerJob?.cancel()
+//        if (this::adPlayer.isInitialized) adPlayer.release()
+//    }
 }
