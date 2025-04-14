@@ -165,10 +165,10 @@ class AdsFragment : Fragment() {
                     delay(500)
 
                     val timeLeft = 15000 - current
-                    if (timeLeft <= 3000) {
+                    if (timeLeft <= 4000) {
                         when {
-                            timeLeft <= 1000 -> updateUISecondsLeft(1)
-                            timeLeft <= 2000 -> updateUISecondsLeft(2)
+                            timeLeft <= 2000 -> updateUISecondsLeft(1)
+                            timeLeft <= 3000 -> updateUISecondsLeft(2)
                             else -> updateUISecondsLeft(3)
                         }
                     }
