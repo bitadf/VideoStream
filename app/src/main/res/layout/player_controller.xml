@@ -94,6 +94,7 @@
                 </LinearLayout>
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/video_like_icon"
                 android:layout_width="57dp"
                 android:layout_height="57dp"
                 android:src="@drawable/play_video_empty_like"

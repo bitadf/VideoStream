@@ -1,5 +1,6 @@
 package com.example.videostream.presentation.fragments
 
+import VideoMapper
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.util.Log
@@ -15,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.videostream.R
 import com.example.videostream.data.dataclasses.Video
+import com.example.videostream.data.local.DataBase
+import com.example.videostream.data.repository.VideoDataBaseRepository
 import com.example.videostream.databinding.FragmentVideoPlayerBinding
 import com.example.videostream.utils.Constants.PLAY_VIDEO
 import com.example.videostream.utils.Constants.PLAY_VIDEO_DUR
@@ -23,8 +26,12 @@ import com.example.videostream.utils.Constants.PLAY_VIDEO_TITLE
 import com.example.videostream.utils.Constants.PLAY_VIDEO_URL
 import com.example.videostream.utils.Duration
 import com.example.videostream.utils.FragmentChanging
+import com.example.videostream.viewmodel.RoomVideoViewModel
+import com.example.videostream.viewmodel.SharedViewModel
+import com.example.videostream.viewmodel.VideoDatabaseViewModelFactory
 import com.example.videostream.viewmodel.VideoViewModel
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.Player
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,6 +44,8 @@ class VideoPlayerFragment : Fragment() {
     private var videoObject : Video? = null
 
     private lateinit var viewModel: VideoViewModel
+    private lateinit var roomVideoViewModel: RoomVideoViewModel
+    private lateinit var sharedPref : SharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,12 +66,29 @@ class VideoPlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(VideoViewModel::class.java)
+        sharedPref = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         //player initialization
+
+
 
 
         if(videoObject != null){
             video = ExoPlayer.Builder(requireContext()).build()
             binding.videoPlayerVideo.player = video
+            video.addListener(object  : Player.Listener{
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    super.onPlaybackStateChanged(playbackState)
+                    when (playbackState) {
+                        Player.STATE_ENDED -> {
+                            videoEnd()
+                        }
+                    }
+                }
+            })
+
+
+
+
             val videoInstance = com.google.android.exoplayer2.MediaItem.fromUri(videoObject?.url.toString())
             video.setMediaItem(videoInstance)
             video.prepare()
@@ -78,6 +104,9 @@ class VideoPlayerFragment : Fragment() {
             val passedTime = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_current_time)
             val title = binding.videoPlayerVideo.findViewById<TextView>(R.id.video_title)
             val back = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_back_home)
+
+            val userText = binding.videoPlayerVideo.findViewById<TextView>(R.id.main_user_text)
+            val likeIcon = binding.videoPlayerVideo.findViewById<AppCompatImageView>(R.id.video_like_icon)
             //forward
             forward.setOnClickListener{
                 val nextVideo = viewModel.findNextVideo(videoObject!!.id , 1)
@@ -101,33 +130,43 @@ class VideoPlayerFragment : Fragment() {
             title.text = videoObject!!.title
             duration.text = Duration.formatDurationToVideoTime(videoObject!!.duration)
             ////passed time
-            seekBar.max = videoObject!!.duration.toInt()
+            seekBar.max = (videoObject!!.duration * 1000).toInt()
 
             lifecycleScope.launch {
                 while(true){
                     val current = video.currentPosition
                     passedTime.text = Duration.formatDurationToVideoTime(current / 1000.0)
                     seekBar.progress = current.toInt()
-                    delay(1000)
+                    delay(500)
+
                 }
+
             }
 
-            back.setOnClickListener {
 
+            back.setOnClickListener {
                     FragmentChanging.backHome(parentFragmentManager)
 
             }
+            val dataBase = DataBase.getDatabase(requireActivity())
+            val videoDao = dataBase.videoDao()
+            val videoRep = VideoDataBaseRepository(videoDao , VideoMapper())
+            roomVideoViewModel = ViewModelProvider(requireActivity() ,
+                VideoDatabaseViewModelFactory(videoRep)).get(
+                    RoomVideoViewModel::class.java
+                )
+            roomVideoViewModel.likedIds.observe(viewLifecycleOwner){ids ->
+                if(ids.contains(videoObject!!.id))likeIcon.setImageResource(R.drawable.small_filled_like)
+                else likeIcon.setImageResource(R.drawable.play_video_empty_like)
+            }
+            sharedPref.currentUserId.observe(viewLifecycleOwner){
+               if(it == 1)userText.text = getString(R.string.first_user)
+                else userText.text = getString(R.string.second_user)
+            }
+
         }
 
-
-
-
-
-
-
-
-
-            //onBackPressed
+        //onBackPressed
         val callBack = requireActivity().onBackPressedDispatcher.addCallback(this){
             FragmentChanging.backHome(parentFragmentManager)
         }
@@ -177,4 +216,22 @@ class VideoPlayerFragment : Fragment() {
 
     }
 
+
+
+
+    fun videoEnd(){
+        sharedPref.addVideoCount()
+        sharedPref.videoCount.observe(viewLifecycleOwner){ count ->
+            if(count!= 0 && count % 1 == 0){
+                when(count){
+                    1 ,2 ,4, 8, 12 -> FragmentChanging.changePassInt(parentFragmentManager , AdsFragment() , 0 , "ad")
+                    16 -> FragmentChanging.changePassInt(parentFragmentManager , AdsFragment() , 1 , "ad")
+                    20 -> FragmentChanging.changePassInt(parentFragmentManager , AdsFragment() , 2 , "ad")
+
+                }
+
+            }
+        }
+
+}
 }

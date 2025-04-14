@@ -7,4 +7,5 @@ class VideoRepository {
     private val service = VideoApiClient.retrofit.create(VideoApiService::class.java)
 
     suspend fun getVideos(offset:Int) = service.getAllVideos(offset)
+    suspend fun getAds() = service.getAds()
 }

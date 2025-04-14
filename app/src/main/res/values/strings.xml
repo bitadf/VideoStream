@@ -11,4 +11,9 @@
     <string name="liked_videos">ویدیو های لایک شده</string>
     <string name="users">کاربر ها</string>
     <string name="title">تایتل</string>
+    <string name="ad">آگهی تبلیغاتی</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="pass_ad">ردآگهی</string>
+    <string name="second">ثانیه</string>
 </resources>

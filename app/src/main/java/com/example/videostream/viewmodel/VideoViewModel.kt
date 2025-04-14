@@ -18,6 +18,9 @@ class VideoViewModel : ViewModel() {
     private val _videos = MutableLiveData<List<Video>>(emptyList())
     val videos : LiveData<List<Video>> = _videos
 
+    private val _ads = MutableLiveData<Video>()
+    val ad : LiveData<Video> = _ads
+
 
 
     fun findNextVideo(id : Int , direction : Int) : Video?{
@@ -45,6 +48,54 @@ class VideoViewModel : ViewModel() {
 
     }
 
+    fun getFirstAd() {
+        viewModelScope.launch {
+            val adsRes = videoRep.getAds()
+            if (adsRes.isSuccessful && adsRes.body()?.done == true) {
+                val adsList = adsRes.body()?.result?.advertises
+                if (!adsList.isNullOrEmpty()) {
+                    val ad = adsList[2]
+                    _ads.postValue(ad)
+                } else {
+                    Log.e(VIDEO_API, "Ads list is null or empty")
+                }
+            } else {
+                Log.e(VIDEO_API, "Ads request failed or done=false")
+            }
+        }
+    }
+    fun getSecondAd(){
+        viewModelScope.launch {
+            val adsRes = videoRep.getAds()
+            if (adsRes.isSuccessful && adsRes.body()?.done == true) {
+                val adsList = adsRes.body()?.result?.advertises
+                if (!adsList.isNullOrEmpty()) {
+                    val ad = adsList[1]
+                    _ads.postValue(ad)
+                } else {
+                    Log.e(VIDEO_API, "Ads list is null or empty")
+                }
+            } else {
+                Log.e(VIDEO_API, "Ads request failed or done=false")
+            }
+        }
+    }
+    fun getThirdAd(){
+        viewModelScope.launch {
+            val adsRes = videoRep.getAds()
+            if (adsRes.isSuccessful && adsRes.body()?.done == true) {
+                val adsList = adsRes.body()?.result?.advertises
+                if (!adsList.isNullOrEmpty()) {
+                    val ad = adsList[0]
+                    _ads.postValue(ad)
+                } else {
+                    Log.e(VIDEO_API, "Ads list is null or empty")
+                }
+            } else {
+                Log.e(VIDEO_API, "Ads request failed or done=false")
+            }
+        }
+    }
     fun getVideos(offset: Int) {
         viewModelScope.launch {
             val videoResponse = videoRep.getVideos(offset)
@@ -57,5 +108,6 @@ class VideoViewModel : ViewModel() {
             }
         }
     }
+
 
 }

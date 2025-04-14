@@ -58,9 +58,9 @@ class LikedFragment : Fragment() {
 
         val videoMapper = VideoMapper()
 
-        // observe user id changes
+
         sharedPrefViewModel.currentUserId.observe(viewLifecycleOwner) { currentUser ->
-            // observe likedIds when user changes
+
             roomVideoViewModel.likedIds.observe(viewLifecycleOwner) { likedIds ->
                 if (::videoAdapter.isInitialized) {
                     videoAdapter.setLikedIds(likedIds)
@@ -71,7 +71,7 @@ class LikedFragment : Fragment() {
             roomVideoViewModel.getVideos(currentUser).observe(viewLifecycleOwner) { dbVideos ->
                 val vList = dbVideos.map { videoMapper.toApi(it) }
 
-                // create adapter if not yet initialized
+
                 if (!::videoAdapter.isInitialized) {
                     videoAdapter = VideoAdapter(
                         context = requireContext(),
@@ -92,7 +92,9 @@ class LikedFragment : Fragment() {
                 // set current user id on adapter
                 videoAdapter.setCurrentUserId(currentUser)
             }
+
         }
+
 
         binding.likeBackHome.setOnClickListener {
             FragmentChanging.backHome(parentFragmentManager)

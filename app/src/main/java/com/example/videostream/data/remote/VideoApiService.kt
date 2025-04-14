@@ -1,5 +1,6 @@
 package com.example.videostream.data.remote
 
+import com.example.videostream.data.dataclasses.AdvertisesResponse
 import com.example.videostream.data.dataclasses.VideoResponse
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -13,4 +14,7 @@ interface VideoApiService {
     suspend fun getAllVideos(
         @Query("offset") offset : Int
     ) : Response<VideoResponse>
+
+    @GET("api/advertises/index")
+    suspend fun getAds():Response<AdvertisesResponse>
 }
