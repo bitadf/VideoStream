@@ -212,7 +212,7 @@ class VideoPlayerFragment : Fragment() {
         sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
             if(count != 0 && count % 1 == 0){
                 when(count){
-                    4, 8, 12 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 0, "ad")
+                    1 ,4, 8, 12 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 0, "ad")
                     16 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 1, "ad")
                     20 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 2, "ad")
                 }

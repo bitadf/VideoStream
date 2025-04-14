@@ -32,6 +32,7 @@ import com.example.videostream.viewmodel.VideoDatabaseViewModelFactory
 import com.example.videostream.viewmodel.VideoViewModel
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -49,6 +50,8 @@ class AdsFragment : Fragment() {
 
     private lateinit var backPressedCallback: OnBackPressedCallback
     private lateinit var adPlayer: ExoPlayer
+
+    private var adTimerJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,7 +107,7 @@ class AdsFragment : Fragment() {
 
     }
 
-    fun updateUISecondsLeft(time : Int){
+    fun updateUISecondsLeft(time : Int) {
         val controllerView = binding.videoAdPlayer.findViewById<View>(R.id.ad_controller)
         val layout = controllerView.findViewById<LinearLayout>(R.id.skip_ad_layout)
         val icon = controllerView.findViewById<AppCompatImageView>(R.id.skip_ad_icon)
@@ -112,6 +115,7 @@ class AdsFragment : Fragment() {
         val dots = controllerView.findViewById<TextView>(R.id.skip_ad_dots)
         val sec = controllerView.findViewById<TextView>(R.id.skip_ad_seconds_text)
 
+        remainedTime.text = time.toString()
         layout.visibility =View.VISIBLE
         if(time > 0) {
             icon.visibility = View.GONE
@@ -120,7 +124,6 @@ class AdsFragment : Fragment() {
             sec.visibility = View.VISIBLE
         }
         else{
-
             icon.visibility = View.VISIBLE
             remainedTime.visibility = View.GONE
             dots.visibility = View.GONE
@@ -156,6 +159,8 @@ class AdsFragment : Fragment() {
 
 
         // seekbar + timer
+        var count = 4
+        //var lastDisplayedSecond = -1
         lifecycleScope.launch {
             while (true) {
 
@@ -164,25 +169,47 @@ class AdsFragment : Fragment() {
                     seekBar.progress = current.toInt()
                     delay(500)
 
-                    val timeLeft = 15000 - current
+//                    val timeLeft = 15000 - current
+//                    Log.i("TTTTT" , timeLeft.toString())
+
+//                val current = adPlayer.currentPosition
+                val timeLeft = 15000 - current
+//
+//                if (timeLeft in 1000..4000) {
+//                    val secondsLeft = (timeLeft / 1000).toInt() + 1  // Round up to nearest second
+//
+//                    if (secondsLeft != lastDisplayedSecond) {
+//                        updateUISecondsLeft(secondsLeft)
+//                        lastDisplayedSecond = secondsLeft
+//                    }
+//                }
+//
+//                if (timeLeft <= 0) {
+//                    updateUISecondsLeft(0)
+//                }
                     if (timeLeft <= 4000) {
-                        when {
-                            timeLeft <= 2000 -> updateUISecondsLeft(1)
-                            timeLeft <= 3000 -> updateUISecondsLeft(2)
-                            else -> updateUISecondsLeft(3)
-                        }
+                        //updateUISecondsLeft(3)
+//                        when {
+//                            timeLeft >= 3000 -> updateUISecondsLeft(3)
+//                            timeLeft >= 2000 -> updateUISecondsLeft(2)
+//                            else -> updateUISecondsLeft(1)
+//                        }
+                        updateUISecondsLeft(count--)
                     }
                     if (current >= 15000) {
                         backPressedCallback.isEnabled = true
-                        updateUISecondsLeft(0)
+                        //updateUISecondsLeft(0)
                         // Enable skipping now
                         val skipLayout = controllerView.findViewById<LinearLayout>(R.id.skip_ad_layout)
                         skipLayout.setOnClickListener {
-                            //FragmentChanging.change(parentFragmentManager, VideoPlayerFragment())
+                            adTimerJob?.cancel()
+                           // FragmentChanging.change(parentFragmentManager, VideoPlayerFragment())
                             adPlayer.stop()
                             adPlayer.release()
+
                             parentFragmentManager.popBackStack()
                         }
+                        break
 
                     }
 
@@ -192,5 +219,9 @@ class AdsFragment : Fragment() {
         }
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adTimerJob?.cancel()
+        adPlayer.release()
+    }
 }
