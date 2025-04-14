@@ -44,7 +44,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical"
         android:gravity="center_vertical"
-        android:padding="21sp"
+
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -130,6 +130,7 @@
                 android:textSize="19sp"
                 android:text="00:00"
                 android:layout_alignParentEnd="true"
+                android:layout_marginTop="6dp"
 
 
 
@@ -142,6 +143,7 @@
                 android:text="03:00"
                 android:layout_gravity="center_vertical|start"
                 android:layout_alignParentStart="true"
+                android:textColor="@color/grey"
                 />
 
         </RelativeLayout>

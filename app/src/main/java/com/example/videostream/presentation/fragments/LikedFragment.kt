@@ -23,86 +23,88 @@ import com.example.videostream.viewmodel.VideoViewModel
 
 class LikedFragment : Fragment() {
     private lateinit var binding: FragmentLikedBinding
-
     private lateinit var videoAdapter: VideoAdapter
-    private lateinit var videoRecycler: RecyclerView
 
     private lateinit var roomVideoViewModel: RoomVideoViewModel
     private lateinit var sharedPrefViewModel: SharedViewModel
-    private lateinit var videoList: Video
+
+    private var likedIdsMap: Map<Int, List<Int>>? = null
+    private var videoList: List<Video>? = null
+    private var currentUserId: Int = -1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-        binding = FragmentLikedBinding.inflate(layoutInflater, container, false)
+    ): View {
+        binding = FragmentLikedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        videoRecycler = binding.likedRecycler
-        videoRecycler.layoutManager = LinearLayoutManager(requireContext())
+        val recycler = binding.likedRecycler
+        recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        val dataBase = DataBase.getDatabase(requireActivity())
-        val videoDao = dataBase.videoDao()
-        val videoRep = VideoDataBaseRepository(videoDao, VideoMapper())
+        val database = DataBase.getDatabase(requireActivity())
+        val videoDao = database.videoDao()
+        val videoRepo = VideoDataBaseRepository(videoDao, VideoMapper())
 
         roomVideoViewModel = ViewModelProvider(
             requireActivity(),
-            VideoDatabaseViewModelFactory(videoRep)
-        ).get(RoomVideoViewModel::class.java)
+            VideoDatabaseViewModelFactory(videoRepo)
+        )[RoomVideoViewModel::class.java]
 
-        sharedPrefViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        sharedPrefViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
 
         val videoMapper = VideoMapper()
 
+        sharedPrefViewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
+            currentUserId = userId
 
-        sharedPrefViewModel.currentUserId.observe(viewLifecycleOwner) { currentUser ->
-
+            // Step 1: Observe likedIds
             roomVideoViewModel.likedIds.observe(viewLifecycleOwner) { likedIds ->
-                if (::videoAdapter.isInitialized) {
-                    videoAdapter.setLikedIds(likedIds)
-                }
+                likedIdsMap = likedIds
+                trySetupAdapter(videoMapper)
             }
 
-            // fetch videos for that user
-            roomVideoViewModel.getVideos(currentUser).observe(viewLifecycleOwner) { dbVideos ->
-                val vList = dbVideos.map { videoMapper.toApi(it) }
-
-
-                if (!::videoAdapter.isInitialized) {
-                    videoAdapter = VideoAdapter(
-                        context = requireContext(),
-                        videoList = vList,
-                        roomVideoViewModel = roomVideoViewModel,
-                        sharedViewModel = sharedPrefViewModel,
-                        lifecycleOwner = this
-                    ) { _, video ->
-                        FragmentChanging.passVideoToFragment(parentFragmentManager, video)
-                    }
-
-                    videoRecycler.adapter = videoAdapter
-                } else {
-                    // if adapter exists, just update the list
-                    videoAdapter.updateVideoList(vList)
-                }
-
-                // set current user id on adapter
-                videoAdapter.setCurrentUserId(currentUser)
+            // Step 2: Observe videos
+            roomVideoViewModel.getVideos(userId).observe(viewLifecycleOwner) { dbVideos ->
+                videoList = dbVideos.map { videoMapper.toApi(it) }
+                trySetupAdapter(videoMapper)
             }
-
         }
-
 
         binding.likeBackHome.setOnClickListener {
             FragmentChanging.backHome(parentFragmentManager)
         }
     }
 
+    private fun trySetupAdapter(videoMapper: VideoMapper) {
+        val videos = videoList
+        val likes = likedIdsMap
 
+        // Wait for both to be non-null
+        if (videos != null && likes != null && currentUserId != -1) {
+            if (!::videoAdapter.isInitialized) {
+                videoAdapter = VideoAdapter(
+                    context = requireContext(),
+                    videoList = videos,
+                    roomVideoViewModel = roomVideoViewModel,
+                    sharedViewModel = sharedPrefViewModel,
+                    lifecycleOwner = viewLifecycleOwner
+                ) { _, video ->
+                    FragmentChanging.passVideoToFragment(parentFragmentManager, video)
+                }
+
+                videoAdapter.setCurrentUserId(currentUserId)
+                videoAdapter.setLikedIds(likes)
+
+                binding.likedRecycler.adapter = videoAdapter
+            } else {
+                videoAdapter.updateVideoList(videos)
+                videoAdapter.setLikedIds(likes)
+            }
+        }
+    }
 }
-
-
-
