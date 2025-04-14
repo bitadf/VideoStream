@@ -143,6 +143,19 @@ class VideoPlayerFragment : Fragment() {
                 else userText.text = getString(R.string.second_user)
             }
         }
+        sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
+            when (count) {
+                4, 8, 12 -> FragmentChanging.changePassInt(
+                    parentFragmentManager,
+                    AdsFragment(),
+                    0,
+                    "ad"
+                )
+                16 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 1, "ad")
+                20 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 2, "ad")
+            }
+        }
+
 
         //onBackPressed
         requireActivity().onBackPressedDispatcher.addCallback(this) {
@@ -207,16 +220,24 @@ class VideoPlayerFragment : Fragment() {
         startProgressUpdater()
     }
 
-    fun videoEnd() {
-        sharedPref.addVideoCount()
-        sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
-            if(count != 0 && count % 4 == 0){
-                when(count){
-                    4, 8, 12 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 0, "ad")
-                    16 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 1, "ad")
-                    20 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 2, "ad")
-                }
-            }
-        }
-    }
+//    fun videoEnd() {
+//        sharedPref.addVideoCount()
+//        sharedPref.videoCount.observe(viewLifecycleOwner) { count ->
+//
+//            when (count) {
+//                4, 8, 12 -> FragmentChanging.changePassInt(
+//                    parentFragmentManager,
+//                    AdsFragment(),
+//                    0,
+//                    "ad"
+//                )
+//
+//                16 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 1, "ad")
+//                20 -> FragmentChanging.changePassInt(parentFragmentManager, AdsFragment(), 2, "ad")
+//            }
+//        }
+//    }
+fun videoEnd() {
+    sharedPref.addVideoCount()
+}
 }
