@@ -70,6 +70,7 @@ class LikedFragment : Fragment() {
         sharedPrefViewModel.currentUserId.observe(viewLifecycleOwner) { userId ->
             currentUserId = userId
             videoAdapter.setCurrentUserId(currentUserId)
+            videoAdapter.updateVideoList(videoList)
 
             // Now observe videos for the current user
             roomVideoViewModel.getVideos(currentUserId).observe(viewLifecycleOwner) { dbVideos ->
@@ -78,11 +79,14 @@ class LikedFragment : Fragment() {
             }
         }
 
+
         // Observe liked video IDs (independent of user observer)
         roomVideoViewModel.likedIds.observe(viewLifecycleOwner) { likedMap ->
             likedIdsMap = likedMap
             videoAdapter.setLikedIds(likedIdsMap)
         }
+
+
 
         binding.likeBackHome.setOnClickListener {
             FragmentChanging.backHome(parentFragmentManager)

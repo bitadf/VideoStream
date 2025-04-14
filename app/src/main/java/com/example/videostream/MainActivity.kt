@@ -16,6 +16,7 @@ import com.example.videostream.databinding.ActivityMainBinding
 import com.example.videostream.presentation.fragments.HomeFragment
 import com.example.videostream.presentation.fragments.VideoPlayerFragment
 import com.example.videostream.viewmodel.RoomUserViewModel
+import com.example.videostream.viewmodel.SharedViewModel
 import com.example.videostream.viewmodel.UserDatabaseViewModelFactory
 import kotlinx.coroutines.launch
 
@@ -23,13 +24,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
 
     private lateinit var userViewModel: RoomUserViewModel
+    private lateinit var sharedViewModel: SharedViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val sharedPref = getSharedPreferences("appPref" , Context.MODE_PRIVATE)
-        sharedPref.edit().putInt("current_user" , 1).apply()
+        //sharedPref.edit().putInt("current_user" , 1).apply()
+
+        sharedViewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
+        sharedViewModel.setCurrentUser(1)
 
 
         //
